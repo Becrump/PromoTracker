@@ -37,9 +37,10 @@ jobs:
         npm pkg set author="Becrump"
 
     - name: Build EXE
-      # Packages the 'dist' folder and 'electron.js' into a Windows app
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npx electron-builder --win --x64 --config.directories.output="build-output" --config.files="dist/**/*" --config.files="electron.js" --config.files="package.json"
-
+      
     - name: Upload EXE Artifact
       uses: actions/upload-artifact@v4
       with:
