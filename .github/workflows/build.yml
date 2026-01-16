@@ -1,4 +1,4 @@
-name: Build EXE
+name: Build Electron EXE
 
 on:
   push:
@@ -8,25 +8,40 @@ jobs:
   build:
     runs-on: windows-latest
 
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        python-version: '3.10' # Change this to your python version
+        node-version: 18
 
     - name: Install Dependencies
+      # Installs your project deps + the tools to make the exe
       run: |
-        pip install pyinstaller
-        if (Test-Path requirements.txt) { pip install -r requirements.txt }
+        npm install
+        npm install --save-dev electron electron-builder
 
-    - name: Build with PyInstaller
-      # Replace 'your_script.py' with your actual main script name
-      run: pyinstaller --onefile your_script.py
+    - name: Build Website
+      # Compiles your React/TypeScript code into the 'dist' folder
+      run: npm run build
+
+    - name: Configure Electron Entry Point
+      # This points the app to the wrapper script we just made
+      run: |
+        npm pkg set main="electron.js"
+        npm pkg set description="PromoTracker App"
+        npm pkg set author="Becrump"
+
+    - name: Build EXE
+      # Packages the 'dist' folder and 'electron.js' into a Windows app
+      run: npx electron-builder --win --x64 --config.directories.output="build-output" --config.files="dist/**/*" --config.files="electron.js" --config.files="package.json"
 
     - name: Upload EXE Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Windows-EXE
-        path: dist/*.exe
+        name: PromoTracker-Windows
+        path: build-output/*.exe
