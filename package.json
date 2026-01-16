@@ -14,8 +14,9 @@
     "build:win": "electron-builder --win"
   },
   "author": "PromoPlanner Team",
-  "devDependencies": {
+ "devDependencies": {
     "vite": "^6.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.0.0",
     "electron": "^31.0.0",
     "electron-builder": "^24.13.3"
